@@ -1,0 +1,36 @@
+<head>
+	<title>pagemeteor</title>
+	<link href='http://fonts.googleapis.com/css?family=Rosario:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="/epiceditor/js/epiceditor.js"></script>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="span9">
+				{{> editor }}
+			</div>
+			<div class="span3">
+				{{> sidebar }}
+			</div>
+		</div>
+	</div>
+</body>
+
+<template name="editor">
+<div id="epiceditor"></div>
+</template>
+
+<template name="sidebar">
+{{> render }}
+</template>
+
+<template name="render">
+<h2>Render</h2>
+<select class="filetypes">
+	<option value="pdf">PDF</option>
+	<option value="html">HTML</option>
+	<option value="docx">Microsoft .docx</option>
+	<option value="epub">ePub</option>
+</select>
+</template>
