@@ -1,2 +1,9 @@
 /* CSS declarations go here */
 
+#login-buttons {
+	line-height: 40px;
+}
+
+#login-dropdown-list {
+}
+

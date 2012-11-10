@@ -6,6 +6,7 @@ Meteor.methods
     options = options or {}
     if options.filename and options.project
       Files.insert
+        owner: this.userId
         project: options.project
         filename: options.filename
         contents: options.contents or ""

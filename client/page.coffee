@@ -48,7 +48,9 @@ Template.editor.selectFile = (file_id) ->
 
 Template.render.events
   'change .filetypes': (e) ->
-    window.location = "/render?format=#{$(e.srcElement).val()}&file=#{Session.get('selected_file')}"
+    file = Files.findOne({_id: Session.get('selected_file')})
+    Meteor.call 'render', file, $(e.srcElement).val(), (err, res) ->
+      window.location = res
 
 Template.files.events
   'keyup input': (e) ->
