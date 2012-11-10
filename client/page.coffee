@@ -1,18 +1,20 @@
 RENDER_API = 'http://localhost:9000'
 
-Meteor.subscribe('files')
+Meteor.subscribe 'projects', () ->
+  unless Session.get("selected_project")
+    project = Projects.findOne()
+    if (project)
+      Session.set("selected_project", project._id)
 
-Meteor.startup () ->
-  Meteor.autorun () ->
-    unless Session.get("selected")
-      file = Files.findOne()
-      if (file)
-        Session.set("selected", file._id)
+Meteor.autosubscribe () ->
+  project_id = Session.get("selected_project")
+  if project_id
+    Meteor.subscribe 'files', project_id
 
 Template.editor.rendered = ->
   editor = new EpicEditor(
     parser: (text) ->
-      file = Files.findOne({_id: Session.get('selected')})
+      file = Files.findOne({_id: Session.get('selected_file')})
       if file?
         ext = file.filename.split('.').pop()
         if ext == 'tex'
@@ -27,11 +29,12 @@ Template.editor.rendered = ->
       preview: '/themes/preview/svbtle.css'
   ).load()
   editor.on 'save', () ->
-    file = Files.findOne({_id: Session.get('selected')})
-    Files.update {_id: Session.get('selected')},
-      $set:
-        contents: editor.exportFile()
-    Meteor.call('saveFile', file);
+    file = Files.findOne({_id: Session.get('selected_file')})
+    if file?
+      Files.update {_id: file._id},
+        $set:
+          contents: editor.exportFile()
+      Meteor.call('saveFile', file);
 
   window.editor = editor
 
@@ -42,12 +45,13 @@ Template.render.events
 Template.files.events
   'click .filename': (e) ->
     file = Files.findOne({_id: e.srcElement.id})
-    Session.set("selected", file._id)
+    Session.set("selected_file", file._id)
     editor.importFile file.filename, file.contents
   'keyup input': (e) ->
     if e.keyCode == 13
       Meteor.call 'createFile',
         filename: $(e.srcElement).val()
+        project: Session.get('selected_project')
 
 Template.files.files = ->
   Files.find()

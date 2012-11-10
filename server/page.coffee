@@ -1,9 +1,13 @@
 require = __meteor_bootstrap__.require
 spawn = require('child_process').spawn
 
-Meteor.publish "files", () ->
-  Files.find
+Meteor.publish "projects", () ->
+  Projects.find
     owner: this.userId
+
+Meteor.publish "files", (project_id) ->
+  Files.find
+    project: project_id
 
 Meteor.methods
   pandoc: (from, to, text) ->
