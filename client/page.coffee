@@ -1,5 +1,10 @@
 RENDER_API = 'http://localhost:9000'
 
+Meteor.startup () ->
+  unless Projects.findOne()
+    Meteor.call 'createProject',
+      name: 'Default'
+
 Meteor.subscribe 'projects', () ->
   unless Session.get("selected_project")
     project = Projects.findOne()
@@ -21,25 +26,19 @@ Template.editor.rendered = ->
     parser: (text) ->
       file = Files.findOne({_id: Session.get('selected_file')})
       if file?
-        ext = file.filename.split('.').pop()
-        if ext == 'tex'
-          from = 'latex'
-        else
-          from = 'markdown'
-      else
-        from = 'markdown'
-      Meteor.call 'pandoc', from, 'html', text, (err, res) ->
-        editor.previewer.innerHTML = res
+        Meteor.call 'pandoc', file.filename, 'html', text, (err, res) ->
+          editor.previewer.innerHTML = res
     theme:
       preview: '/themes/preview/svbtle.css'
-  window.editor = editor
+  editor.load()
+  Template.editor.selectFile Session.get('selected_file')
   editor.on 'save', () ->
     file = Files.findOne({_id: Session.get('selected_file')})
     if file?
       Files.update {_id: file._id},
         $set:
           contents: editor.exportFile()
-  editor.load()
+  window.editor = editor
 
 Template.editor.selectFile = (file_id) ->
   file = Files.findOne({_id: file_id})
@@ -49,7 +48,7 @@ Template.editor.selectFile = (file_id) ->
 
 Template.render.events
   'change .filetypes': (e) ->
-    console.log $(e.srcElement).val()
+    window.location = "/render?format=#{$(e.srcElement).val()}&file=#{Session.get('selected_file')}"
 
 Template.files.events
   'keyup input': (e) ->
