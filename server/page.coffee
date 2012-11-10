@@ -15,4 +15,3 @@ Meteor.methods
     p.stdin.end()
     fut.wait()
     fut.value.toString()
-
