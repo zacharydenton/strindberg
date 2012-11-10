@@ -20,11 +20,8 @@ pandoc = (filename, to, text, next) ->
       exec "pandoc -t #{to} --webtex -o #{output} #{input}", (error, stdout, stderr) ->
         next(error, output)
 
-publicPath = (file) ->
+filePath = (file) ->
   [BASE_PATH, 'public', 'render', file.owner, file.project, file.filename].join '/'
-
-publicUrl = (file) ->
-  Meteor.absoluteUrl(['render', file.owner, file.project, file.filename].join '/')
 
 Meteor.publish "projects", () ->
   Projects.find
@@ -45,7 +42,27 @@ Meteor.methods
 
   render: (file, format) ->
     pandoc file.filename, format, file.contents, (err, filename) ->
-        exec "mkdir -p `dirname #{publicPath(file)}`", (err, stdout, stderr) ->
-          exec "mv #{filename} #{publicPath(file)}.#{format}", (err, stdout, stderr) ->
+        exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
+          exec "mv #{filename} #{filePath(file)}.#{format}", (err, stdout, stderr) ->
 
-    "#{publicUrl(file)}.#{format}"
+    "#{fileUrl(file)}.#{format}"
+
+  saveFile: (blob, name, project, encoding) ->
+    cleanPath = (str) ->
+      if str
+        str.replace(/\.\./g,'').replace(/^\/+/,'').replace(/\/+$/,'')
+
+    cleanName = (str) ->
+      str.replace(/\.\./g,'').replace(/\//g,'')
+
+    path = cleanPath("render/#{project.owner}/#{project._id}")
+    name = cleanName(name or 'file')
+    encoding = encoding or 'binary'
+    chroot = Meteor.chroot or 'public'
+    path = chroot + (if path then '/' + path + '/' else '/')
+    
+    exec "mkdir -p `dirname #{path + name}`", (err, stdout, stderr) ->
+      fs.writeFile path + name, blob, encoding
+
+    true
+

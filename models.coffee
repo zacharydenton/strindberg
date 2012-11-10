@@ -1,6 +1,12 @@
 Projects = new Meteor.Collection('projects')
 Files = new Meteor.Collection('files')
 
+fileUrl = (file) ->
+  Meteor.absoluteUrl(['render', file.owner, file.project, file.filename].join '/')
+
+projectUrl = (project) ->
+  Meteor.absoluteUrl(['render', project.owner, project._id].join '/')
+
 Meteor.methods
   createFile: (options) ->
     options = options or {}
@@ -10,6 +16,7 @@ Meteor.methods
         project: options.project
         filename: options.filename
         contents: options.contents or ""
+
   createProject: (options) ->
     options = options or {}
     if options.name

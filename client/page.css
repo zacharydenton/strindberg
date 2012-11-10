@@ -1,5 +1,29 @@
 /* CSS declarations go here */
 
+html, body {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+#epiceditor {
+	height: 100%;
+}
+
+.navbar {
+	margin: 0;
+}
+
+.row-fluid, .container-fluid {
+	height: 100%;
+	padding: 0;
+}
+
+.row-fluid > * {
+	height: 100%;
+}
+
 #login-buttons {
 	line-height: 40px;
 }
