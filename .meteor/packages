@@ -6,3 +6,12 @@
 autopublish
 insecure
 preserve-inputs
+underscore
+jquery
+coffeescript
+bootstrap
+accounts-base
+accounts-facebook
+accounts-github
+accounts-google
+accounts-twitter
