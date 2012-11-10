@@ -2,10 +2,6 @@
 	<title>pagemeteor</title>
 	<link href='http://fonts.googleapis.com/css?family=Rosario:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
 	<script type="text/javascript" src="/epiceditor/js/epiceditor.js"></script>
-	<script src="https://api.filepicker.io/v1/filepicker.js"></script>
-	<script type="text/javascript">
-		filepicker.setKey('AHq36RnNQ06Z8RBxo9JZKz');
-	</script>
 </head>
 
 <body>
@@ -58,10 +54,16 @@
 
 <template name="files">
 <h2>Files</h2>
+<ul class="nav nav-pills nav-stacked">
 {{#each files}}
-<p class="filename" id="{{_id}}">{{filename}}</p>
+{{> file}}
 {{/each}}
+</ul>
 <input type="text" placeholder="Add new" />
+</template>
+
+<template name="file">
+<li class="{{selected}}"><a href="#">{{filename}}</a></li>
 </template>
 
 <template name="render">
