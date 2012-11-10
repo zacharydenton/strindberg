@@ -5,8 +5,9 @@
 </head>
 
 <body>
-	<div class="container">
-		<div class="row">
+	{{> nav }}
+	<div class="container-fluid">
+		<div class="row-fluid">
 			<div class="span9">
 				{{> editor }}
 			</div>
@@ -17,12 +18,45 @@
 	</div>
 </body>
 
+<template name="nav">
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+ 
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+ 
+      <!-- Be sure to leave the brand out there if you want it shown -->
+      <a class="brand" href="#">PageMeteor</a>
+ 
+      <!-- Everything you want hidden at 940px or less, place within here -->
+      <div class="nav-collapse collapse">
+		  {{ loginButtons align=right }}
+      </div>
+ 
+    </div>
+  </div>
+</div>
+</template>
+
 <template name="editor">
 <div id="epiceditor"></div>
 </template>
 
 <template name="sidebar">
 {{> render }}
+{{> files }}
+</template>
+
+<template name="files">
+<h2>Files</h2>
+{{#each files}}
+<p class="filename" id="{{_id}}">{{filename}}</p>
+{{/each}}
 </template>
 
 <template name="render">

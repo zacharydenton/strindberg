@@ -1,10 +1,14 @@
 require = __meteor_bootstrap__.require
 spawn = require('child_process').spawn
 
+Meteor.publish "files", () ->
+  Files.find
+    owner: this.userId
+
 Meteor.methods
-  pandoc: (format, text) ->
+  pandoc: (from, to, text) ->
     fut = new Future()
-    p = spawn("pandoc", ['-t', format])
+    p = spawn("pandoc", ['-f', from, '-t', to])
     p.stdout.on 'data', (data) ->
       fut.ret(data)
     p.stdin.write(text)
