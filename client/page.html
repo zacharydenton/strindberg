@@ -96,16 +96,18 @@
 <div class="btn-group dropup">
   <button value="pdf" class="btn">PDF</button>
   <button value="docx" class="btn">DOC</button>
-  <button value="beamer" class="btn">Slideshow</button>
-  <button value="epub" class="btn">ePub</button>
+  <button value="beamer" class="hidden-phone hidden-tablet btn">Slideshow</button>
+  <button value="epub" class="hidden-tablet hidden-phone btn">ePub</button>
   <button class="btn dropdown-toggle" data-toggle="dropdown">
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu">
     <li><a href="#" value="dzslides">HTML5 Slideshow</a></li>
     <li><a href="#" value="mediawiki">Mediawiki</a></li>
+    <li class="visible-phone visible-tablet"><a href="#" value="beamer">Slideshow</a></li>
     <li><a href="#" value="org">Org-Mode</a></li>
     <li><a href="#" value="textile">Textile</a></li>
+    <li class="visible-phone visible-tablet"><a href="#" value="epub">ePub</a></li>
     <li><a href="#" value="odt">ODT</a></li>
     <li><a href="#" value="rtf">RTF</a></li>
   </ul>
