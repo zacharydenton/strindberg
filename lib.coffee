@@ -1,7 +1,6 @@
 wordCount = (str) ->
-  words = str.match(/\S+/g)
-  if words?
-    words.length
+  if str?
+    str.match(/\S+/g).length
   else
     0
 

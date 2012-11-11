@@ -55,25 +55,28 @@ Template.editor.rendered = ->
     theme:
       preview: '/themes/preview/svbtle.css'
   editor.load()
-  if Session.get('selected_file')
-    Template.editor.selectFile Session.get('selected_file')
-  else
-    file = Files.findOne()
-    if file
-      Template.editor.selectFile file._id
+
+  editor.on 'save', ->
+    text = editor.exportFile()
+    Session.set('wordcount', wordCount(text))
 
   Meteor.setInterval ->
     file = Files.findOne({_id: Session.get('selected_file')})
     if file?
       text = editor.exportFile()
-      if text
-        Session.set('wordcount', wordCount(text))
       if text and file.contents != text
         Meteor.call 'createVersion', file, editor.exportFile()
         Session.set 'selected_version', file.version + 1
   , 30000
 
   window.editor = editor
+
+  if Session.get('selected_file')
+    Template.editor.selectFile Session.get('selected_file')
+  else
+    file = Files.findOne()
+    if file
+      Template.editor.selectFile file._id
 
 Template.editor.selectFile = (file_id) ->
   file = Files.findOne({_id: file_id})
@@ -161,15 +164,15 @@ Template.settings.events
     $("#settings-list").toggle()
 
 Template.versionselect.maxversion = () ->
-  version = Versions.findOne({}, {sort: version: -1})
-  if version?
-    version.version
+  file = Files.findOne {_id: Session.get 'selected_file'}
+  if file?
+    file.version
   else
-    0
+    1
 
 Template.versionselect.currentversion = () ->
   Session.get 'selected_version'
 
 Template.versionselect.events
-  'change': (ev) ->
-    Template.editor.selectVersion ev.target.valueAsNumber
+  'mouseup': (ev) ->
+    Template.editor.selectVersion parseInt($("#versionselect input").val())
