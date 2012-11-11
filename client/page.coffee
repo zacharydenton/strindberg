@@ -102,6 +102,8 @@ Template.render.events
       $.get '/render', {file_id: Session.get('selected_file'), format: format}, (data) ->
         Session.set 'render_progress', 0
         window.location = data
+  'click .progress': (e) ->
+    Session.set 'render_progress', 0
 
 Template.render.progress = ->
   Session.get 'render_progress'
