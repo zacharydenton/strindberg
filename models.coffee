@@ -1,3 +1,4 @@
+#References = new Meteor.Collection('references')
 Projects = new Meteor.Collection('projects')
 Files = new Meteor.Collection('files')
 
@@ -6,6 +7,11 @@ fileUrl = (file) ->
 
 projectUrl = (project) ->
   Meteor.absoluteUrl(['render', project.owner, project._id].join '/')
+
+formatExtension = (format) ->
+  exts =
+    'beamer': 'pdf'
+  exts[format] or format
 
 Meteor.methods
   createFile: (options) ->
@@ -23,3 +29,14 @@ Meteor.methods
       Projects.insert
         owner: this.userId
         name: options.name
+
+        ###
+  createReference: (options) ->
+    options = options or {}
+    if options.filename and options.bibtex
+      References.insert
+        owner: this.userId
+        filename: options.filename
+        bibtex: options.bibtex
+
+        ###

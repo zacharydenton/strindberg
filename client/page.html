@@ -1,20 +1,16 @@
 <head>
 	<title>pagemeteor</title>
 	<link href='http://fonts.googleapis.com/css?family=Rosario:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.no-icons.min.css" rel="stylesheet">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/2.0/css/font-awesome.css" rel="stylesheet">
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/epiceditor/js/epiceditor.js"></script>
 </head>
 
 <body>
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span9">
-				{{> editor }}
-			</div>
-			<div class="span3">
-				{{> sidebar }}
-			</div>
-		</div>
-	</div>
+  {{> sidebar }}
+  {{> editor }}
+  {{> footer }}
 </body>
 
 <template name="editor">
@@ -22,37 +18,102 @@
 </template>
 
 <template name="sidebar">
-{{ loginButtons }}
-{{> render }}
-{{> files }}
-{{> upload }}
+<div id="sidebar">
+  {{#if currentUser}}
+  <ul class="nav nav-list">
+    {{> files }}
+    {{> references }}
+  </ul>
+  {{else}}
+  {{ loginButtons }}
+  {{/if}}
+  {{> render }}
+</div>
+</template>
+
+<template name="footer">
+<div id="footer">
+  {{> settings }}
+  <span id="wordcount" class="pull-right">{{ wordcount }} words</span>
+</div>
+</template>
+
+<template name="settings">
+<span id="settings">
+  <i class="icon-cog"></i>
+</span>
+<div id="settings-list">
+  {{> upload }}
+  <button class="logout btn">Log out</button>
+</div>
 </template>
 
 <template name="files">
-<h2>Files</h2>
-<ul class="nav nav-pills nav-stacked">
+<li class="nav-header">Files</li>
 {{#each files}}
 {{> file}}
 {{/each}}
-</ul>
-<input type="text" placeholder="Add new" />
+<li class="add"><a><i class="icon-plus"></i>Add new</a></li>
 </template>
 
 <template name="upload">
-<input type="file" />
+<a href="#file" role="button" class="btn" data-toggle="modal">Add file</a>
+<div id="file" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="fileLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="fileLabel">Add file</h3>
+	</div>
+	<div class="modal-body">
+		<input type="file" />
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button class="btn btn-primary">Save</button>
+	</div>
+</div>
 </template>
 
 <template name="file">
-<li class="{{selected}}"><a href="#">{{filename}}</a></li>
+<li class="{{selected}}"><a href="#">{{filename}}<i class="icon-delete"></i></a></li>
 </template>
 
 <template name="render">
-<h2>Render</h2>
-<select name="format" class="filetypes">
-	<option value="">-- Choose Format --</option>
-	<option value="pdf">PDF</option>
-	<option value="html">HTML</option>
-	<option value="docx">Microsoft .docx</option>
-	<option value="epub">ePub</option>
-</select>
+<div id="render">
+{{#if progress}}
+<div class="progress">
+  <div style="width: {{ progress }}%" class="bar"></div>
+</div>
+{{else}}
+<div class="btn-group">
+  <button value="pdf" class="btn">PDF</button>
+  <button value="docx" class="btn">DOC</button>
+  <button value="beamer" class="btn">Slideshow</button>
+  <button value="epub" class="btn">ePub</button>
+</div>
+{{/if}}
+</template>
+
+<template name="addreference">
+<div id="addreference" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addreferenceLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="addreferenceLabel">Add reference</h3>
+	</div>
+	<div class="modal-body">
+		<input type="file" />
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button class="btn btn-primary">Save changes</button>
+	</div>
+</div>
+</template>
+
+<template name="references">
+<li class="nav-header">References</li>
+{{#each references}}
+{{> reference}}
+{{/each}}
+<li class="add"><a href="#addreference" data-toggle="modal"><i class="icon-plus"></i>Add new</a></li>
+{{> addreference }}
 </template>

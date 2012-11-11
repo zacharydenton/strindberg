@@ -8,16 +8,14 @@ BINARY_FORMATS = ['pdf', 'odt', 'epub', 'docx', 'rtf']
 BASE_PATH = path.resolve('.')
 
 pandoc = (filename, to, text, next) ->
-  exts =
-    'beamer': 'pdf'
   exec "mktemp", (e, tempfile, o) ->
     tempfile = tempfile.trim()
     input = "#{tempfile}.#{filename.split('.').pop()}"
-    output = "#{tempfile}.#{exts[to] or to}"
+    output = "#{tempfile}.#{formatExtension to}"
     if to == 'pdf'
       to = 'latex'
     fs.writeFile input, text, (err, res) ->
-      exec "pandoc -t #{to} --webtex -o #{output} #{input}", (error, stdout, stderr) ->
+      exec "pandoc -t #{to} --webtex --latex-engine=xelatex --o #{output} #{input}", (error, stdout, stderr) ->
         next(error, output)
 
 filePath = (file) ->
@@ -42,8 +40,8 @@ Meteor.methods
 
   render: (file, format) ->
     pandoc file.filename, format, file.contents, (err, filename) ->
-        exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
-          exec "mv #{filename} #{filePath(file)}.#{format}", (err, stdout, stderr) ->
+      exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
+        exec "mv #{filename} #{filePath(file)}.#{format}"
 
     "#{fileUrl(file)}.#{format}"
 

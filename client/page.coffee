@@ -36,11 +36,12 @@ Meteor.saveFile = (blob, name, path, type, callback) ->
   fileReader[method](blob)
 
 Template.editor.rendered = ->
+  $("#epiceditor").height($(window).height() - 20)
   editor = new EpicEditor
     clientSideStorage: no
     focusOnLoad: yes
     file:
-      autoSave: 5000
+      autoSave: 500
     parser: (text) ->
       file = Files.findOne({_id: Session.get('selected_file')})
       if file?
@@ -49,12 +50,17 @@ Template.editor.rendered = ->
     theme:
       preview: '/themes/preview/svbtle.css'
   editor.load()
-  Template.editor.selectFile Session.get('selected_file')
+  if Session.get('selected_file')
+    Template.editor.selectFile Session.get('selected_file')
+  else
+    file = Files.findOne()
+    if file
+      Template.editor.selectFile file._id
   editor.on 'save', () ->
     file = Files.findOne({_id: Session.get('selected_file')})
     text = editor.exportFile()
+    Session.set('wordcount', wordCount(text))
     if text and file? and file.contents != text
-      console.log text
       Files.update {_id: file._id},
         $set:
           contents: editor.exportFile()
@@ -67,21 +73,42 @@ Template.editor.selectFile = (file_id) ->
     editor.importFile file.filename, file.contents
 
 Template.render.events
-  'change .filetypes': (e) ->
+  'click button': (e) ->
     file = Files.findOne({_id: Session.get('selected_file')})
-    Meteor.call 'render', file, $(e.srcElement).val(), (err, res) ->
-      window.location = res
+    format = $(e.srcElement).val()
+    Meteor.call 'render', file, format, (err, res) ->
+      bar = Meteor.setInterval () ->
+        progress = Session.get 'render_progress'
+        if progress
+          if progress >= 100
+            Meteor.clearInterval bar
+            Session.set 'render_progress', null
+            window.location = "#{fileUrl file}.#{formatExtension format}"
+          else
+            Session.set "render_progress", progress + 1
+        else
+          Session.set "render_progress", 1
+      , 20
+
+Template.render.progress = ->
+  Session.get 'render_progress'
 
 Template.files.events
-  'keyup input': (e) ->
+  'click .add': (e) ->
+    $(e.srcElement).attr('contentEditable', true)
+    $(e.srcElement).text('')
+    $(e.srcElement).focus()
+    $(e.srcElement).bind 'blur', () ->
+      $(this).html '<a><i class="icon-plus"></i>Add new</a>'
+  'keyup .add': (e) ->
     if e.keyCode == 13
       Meteor.call 'createFile',
-        filename: $(e.srcElement).val()
+        filename: $(e.srcElement).text().trim()
         project: Session.get('selected_project')
       , (err, res) ->
         if res?
           Template.editor.selectFile(res)
-      $(e.srcElement).val('')
+      $(e.srcElement).blur()
 
 Template.files.files = ->
   Files.find()
@@ -101,4 +128,12 @@ Template.upload.events
         filename: file.name
         project: Session.get('selected_project')
 
+Template.footer.wordcount = () ->
+  Session.get('wordcount') or 0
 
+Template.settings.events
+  'click #settings': (ev) ->
+    $("#settings-list").toggle()
+  'click button.logout': (ev) ->
+    Meteor.logout()
+    $("#settings-list").toggle()
