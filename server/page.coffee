@@ -33,7 +33,7 @@ router = connect.middleware.router (route) ->
     format = req.query.format
     pandoc file.filename, format, file.contents, (err, filename) ->
       exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
-        exec "mv #{filename} #{filePath(file)}.#{formatExtension format}", ->
+        fs.rename filename, "#{filePath(file)}.#{formatExtension format}", ->
           res.writeHead(200)
           res.end("#{fileUrl(file)}.#{formatExtension format}")
     null
