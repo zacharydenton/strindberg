@@ -67,7 +67,7 @@ Template.editor.rendered = ->
       if text and file.contents != text
         Meteor.call 'createVersion', file, editor.exportFile()
         Session.set 'selected_version', file.version + 1
-  , 30000
+  , 10000
 
   window.editor = editor
 
