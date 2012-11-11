@@ -1,4 +1,5 @@
 #References = new Meteor.Collection('references')
+Versions = new Meteor.Collection('versions')
 Projects = new Meteor.Collection('projects')
 Files = new Meteor.Collection('files')
 
@@ -25,7 +26,7 @@ Meteor.methods
         owner: this.userId
         project: options.project
         filename: options.filename
-        contents: options.contents or ""
+        version: 1
 
   createProject: (options) ->
     options = options or {}
@@ -33,6 +34,18 @@ Meteor.methods
       Projects.insert
         owner: this.userId
         name: options.name
+
+  createVersion: (file, contents) ->
+    if file? and contents?
+      Versions.insert
+        owner: this.userId
+        file: file._id
+        version: file.version + 1
+        contents: contents
+      Files.update {_id: file._id},
+        $set:
+          version: file.version + 1
+          contents: contents
 
         ###
   createReference: (options) ->

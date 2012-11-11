@@ -34,7 +34,15 @@
 <template name="footer">
 <div id="footer">
   {{> settings }}
-  <span id="wordcount" class="pull-right">{{ wordcount }} words</span>
+  {{> versionselect }}
+  <span id="wordcount" class="pull-right">Words: {{ wordcount }}</span>
+  <span id="version" class="pull-right">Version: {{ version }}</span>
+</div>
+</template>
+
+<template name="versionselect">
+<div id="versionselect">
+  <input type="range" min=1 max={{ maxversion }} value={{ currentversion }} />
 </div>
 </template>
 

@@ -49,6 +49,17 @@ html, body {
   line-height: 20px;
 }
 
+#footer #versionselect {
+  position: absolute;
+  width: 50%;
+  left: 25%;
+  bottom: 0;
+}
+
+#footer #versionselect input {
+  width: 100%;
+}
+
 #footer #settings {
   margin-left: 5px;
   cursor: pointer;
@@ -72,6 +83,10 @@ html, body {
 
 #footer #wordcount {
 	margin-right: 5px;
+}
+
+#footer #version {
+  margin-right: 40px;
 }
 
 #sidebar .nav-list {

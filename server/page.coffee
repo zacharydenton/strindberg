@@ -28,6 +28,9 @@ Meteor.publish "projects", () ->
 Meteor.publish "files", (project_id) ->
   Files.find {project: project_id}, {sort: filename: 1}
 
+Meteor.publish "versions", (file_id) ->
+  Versions.find {file: file_id}, {sort: version: 1}
+
 Meteor.methods
   pandoc: (filename, to, text) ->
     fut = new Future()

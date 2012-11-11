@@ -16,6 +16,11 @@ Meteor.autosubscribe () ->
   if project_id
     Meteor.subscribe 'files', project_id
 
+Meteor.autosubscribe () ->
+  file_id = Session.get("selected_file")
+  if file_id
+    Meteor.subscribe 'versions', file_id
+
 Meteor.saveFile = (blob, name, path, type, callback) ->
   fileReader = new FileReader()
   encoding = 'binary'
@@ -41,7 +46,7 @@ Template.editor.rendered = ->
     clientSideStorage: no
     focusOnLoad: yes
     file:
-      autoSave: 500
+      autoSave: 100
     parser: (text) ->
       file = Files.findOne({_id: Session.get('selected_file')})
       if file?
@@ -56,21 +61,35 @@ Template.editor.rendered = ->
     file = Files.findOne()
     if file
       Template.editor.selectFile file._id
-  editor.on 'save', () ->
+
+  Meteor.setInterval ->
     file = Files.findOne({_id: Session.get('selected_file')})
-    text = editor.exportFile()
-    Session.set('wordcount', wordCount(text))
-    if text and file? and file.contents != text
-      Files.update {_id: file._id},
-        $set:
-          contents: editor.exportFile()
+    if file?
+      text = editor.exportFile()
+      if text
+        Session.set('wordcount', wordCount(text))
+      if text and file.contents != text
+        Meteor.call 'createVersion', file, editor.exportFile()
+        Session.set 'selected_version', file.version + 1
+  , 30000
+
   window.editor = editor
 
 Template.editor.selectFile = (file_id) ->
   file = Files.findOne({_id: file_id})
   if file?
     Session.set("selected_file", file_id)
+    Session.set 'selected_version', file.version
+    Session.set('wordcount', wordCount(file.contents))
     editor.importFile file.filename, file.contents
+
+Template.editor.selectVersion = (version_number) ->
+  version = Versions.findOne {version: version_number}
+  if version?
+    file = Files.findOne {_id: version.file}
+    Session.set 'selected_version', version_number
+    Session.set('wordcount', wordCount(version.contents))
+    editor.importFile file.filename, version.contents
 
 Template.render.events
   'click button': (e) ->
@@ -131,9 +150,26 @@ Template.upload.events
 Template.footer.wordcount = () ->
   Session.get('wordcount') or 0
 
+Template.footer.version = () ->
+  Session.get('selected_version') or 1
+
 Template.settings.events
   'click #settings': (ev) ->
     $("#settings-list").toggle()
   'click button.logout': (ev) ->
     Meteor.logout()
     $("#settings-list").toggle()
+
+Template.versionselect.maxversion = () ->
+  version = Versions.findOne({}, {sort: version: -1})
+  if version?
+    version.version
+  else
+    0
+
+Template.versionselect.currentversion = () ->
+  Session.get 'selected_version'
+
+Template.versionselect.events
+  'change': (ev) ->
+    Template.editor.selectVersion ev.target.valueAsNumber
