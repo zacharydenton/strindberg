@@ -28,12 +28,16 @@ Meteor.methods
         filename: options.filename
         version: 1
 
+    return null
+
   createProject: (options) ->
     options = options or {}
     if options.name
       Projects.insert
         owner: this.userId
         name: options.name
+
+    return null
 
   createVersion: (file, contents) ->
     if file? and contents?
@@ -47,13 +51,4 @@ Meteor.methods
           version: file.version + 1
           contents: contents
 
-        ###
-  createReference: (options) ->
-    options = options or {}
-    if options.filename and options.bibtex
-      References.insert
-        owner: this.userId
-        filename: options.filename
-        bibtex: options.bibtex
-
-        ###
+    return null
