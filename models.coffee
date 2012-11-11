@@ -11,6 +11,10 @@ projectUrl = (project) ->
 formatExtension = (format) ->
   exts =
     'beamer': 'pdf'
+    'dzslides': 'html'
+    's5': 'html'
+    'slideous': 'html'
+    'slidy': 'html'
   exts[format] or format
 
 Meteor.methods

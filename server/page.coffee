@@ -15,7 +15,7 @@ pandoc = (filename, to, text, next) ->
     if to == 'pdf'
       to = 'latex'
     fs.writeFile input, text, (err, res) ->
-      exec "pandoc -t #{to} --webtex --latex-engine=xelatex --o #{output} #{input}", (error, stdout, stderr) ->
+      exec "pandoc -t #{to} --webtex --latex-engine=xelatex -s #{input} -o #{output}", (error, stdout, stderr) ->
         next(error, output)
 
 filePath = (file) ->
@@ -41,7 +41,7 @@ Meteor.methods
   render: (file, format) ->
     pandoc file.filename, format, file.contents, (err, filename) ->
       exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
-        exec "mv #{filename} #{filePath(file)}.#{format}"
+        exec "mv #{filename} #{filePath(file)}.#{formatExtension format}"
 
     "#{fileUrl(file)}.#{format}"
 

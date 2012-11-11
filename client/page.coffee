@@ -88,7 +88,7 @@ Template.render.events
             Session.set "render_progress", progress + 1
         else
           Session.set "render_progress", 1
-      , 20
+      , 30
 
 Template.render.progress = ->
   Session.get 'render_progress'
