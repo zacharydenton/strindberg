@@ -35,7 +35,7 @@ router = connect.middleware.router (route) ->
       exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
         exec "mv #{filename} #{filePath(file)}.#{formatExtension format}", ->
           res.writeHead(200)
-          res.end("#{fileUrl(file)}.#{format}")
+          res.end("#{fileUrl(file)}.#{formatExtension format}")
     null
 
 app.use(router)
