@@ -7,6 +7,15 @@ html, body {
   overflow: hidden;
 }
 
+body,
+input,
+button,
+select,
+textarea,
+.navbar-search .search-query {
+  font-family: 'Droid Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+}
+
 #epiceditor {
 	position: absolute;
 	width: 80%;
@@ -65,7 +74,7 @@ html, body {
   position: absolute;
   font-size: 20px;
   left: 5px;
-  bottom: -4px;
+  bottom: -3px;
   cursor: pointer;
 }
 
@@ -100,6 +109,10 @@ html, body {
 	padding: 10px;
 }
 
+#sidebar .nav-list li.nav-header {
+  font-size: 15px;
+}
+
 #sidebar .nav-list li a {
 	margin-right: -10px;
 }
@@ -126,3 +139,7 @@ html, body {
   margin: 0 10px;
 }
 
+#render .dropdown-menu {
+  right: 0;
+  left: auto;
+}

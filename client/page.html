@@ -1,10 +1,12 @@
 <head>
-	<title>pagemeteor</title>
-	<link href='http://fonts.googleapis.com/css?family=Rosario:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <title>Strindberg</title>
+  <link href='http://fonts.googleapis.com/css?family=Rosario:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+
   <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.no-icons.min.css" rel="stylesheet">
   <link href="//netdna.bootstrapcdn.com/font-awesome/2.0/css/font-awesome.css" rel="stylesheet">
   <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/epiceditor/js/epiceditor.js"></script>
+  <script type="text/javascript" src="/epiceditor/js/epiceditor.js"></script>
 </head>
 
 <body>
@@ -22,7 +24,6 @@
   {{#if currentUser}}
   <ul class="nav nav-list">
     {{> files }}
-    {{> references }}
   </ul>
   {{else}}
   {{ loginButtons }}
@@ -87,16 +88,27 @@
 
 <template name="render">
 <div id="render">
-{{#if progress}}
+{{#if rendering}}
 <div class="progress">
   <div style="width: {{ progress }}%" class="bar"></div>
 </div>
 {{else}}
-<div class="btn-group">
+<div class="btn-group dropup">
   <button value="pdf" class="btn">PDF</button>
   <button value="docx" class="btn">DOC</button>
-  <button value="dzslides" class="btn">Slideshow</button>
+  <button value="beamer" class="btn">Slideshow</button>
   <button value="epub" class="btn">ePub</button>
+  <button class="btn dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#" value="dzslides">HTML5 Slideshow</a></li>
+    <li><a href="#" value="mediawiki">Mediawiki</a></li>
+    <li><a href="#" value="org">Org-Mode</a></li>
+    <li><a href="#" value="textile">Textile</a></li>
+    <li><a href="#" value="odt">ODT</a></li>
+    <li><a href="#" value="rtf">RTF</a></li>
+  </ul>
 </div>
 {{/if}}
 </template>

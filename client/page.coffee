@@ -95,25 +95,27 @@ Template.editor.selectVersion = (version_number) ->
     editor.importFile file.filename, version.contents
 
 Template.render.events
-  'click button': (e) ->
+  'click button, click a': (e) ->
     file = Files.findOne({_id: Session.get('selected_file')})
-    format = $(e.srcElement).val()
-    Meteor.call 'render', file, format, (err, res) ->
+    format = $(e.srcElement).attr 'value'
+    if file? and format
+      Session.set 'render_progress', 1
+      Meteor.call 'render', file, format
       bar = Meteor.setInterval () ->
         progress = Session.get 'render_progress'
-        if progress
-          if progress >= 100
-            Meteor.clearInterval bar
-            Session.set 'render_progress', null
-            window.location = "#{fileUrl file}.#{formatExtension format}"
-          else
-            Session.set "render_progress", progress + 1
+        if progress >= 100
+          Meteor.clearInterval bar
+          Session.set 'render_progress', 0
+          window.location = "#{fileUrl file}.#{formatExtension format}"
         else
-          Session.set "render_progress", 1
+          Session.set "render_progress", progress + 1
       , 30
 
 Template.render.progress = ->
   Session.get 'render_progress'
+
+Template.render.rendering = ->
+  Session.get('render_progress') > 0
 
 Template.files.events
   'click .add': (e) ->
