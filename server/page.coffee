@@ -2,10 +2,15 @@ require = __meteor_bootstrap__.require
 exec = require('child_process').exec
 fs = require('fs')
 path = require('path')
+app = __meteor_bootstrap__.app
 
 TEXT_FORMATS = ['html', 'latex', 'markdown', 'plain', 'rst', 'org', 'mediawiki']
 BINARY_FORMATS = ['pdf', 'odt', 'epub', 'docx', 'rtf']
 BASE_PATH = path.resolve('.')
+if process.env.WEB_ROOT
+  WEB_ROOT = process.env.WEB_ROOT
+else
+  WEB_ROOT = BASE_PATH + '/' + 'public'
 
 pandoc = (filename, to, text, next) ->
   exec "mktemp", (e, tempfile, o) ->
@@ -19,7 +24,7 @@ pandoc = (filename, to, text, next) ->
         next(error, output)
 
 filePath = (file) ->
-  [BASE_PATH, 'public', 'render', file.owner, file.project, file.filename].join '/'
+  [WEB_ROOT, 'render', file.owner, file.project, file.filename].join '/'
 
 Meteor.publish "projects", () ->
   Projects.find
