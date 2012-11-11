@@ -96,20 +96,12 @@ Template.editor.selectVersion = (version_number) ->
 
 Template.render.events
   'click button, click a': (e) ->
-    file = Files.findOne({_id: Session.get('selected_file')})
     format = $(e.srcElement).attr 'value'
     if file? and format
-      Session.set 'render_progress', 1
-      Meteor.call 'render', file, format
-      bar = Meteor.setInterval () ->
-        progress = Session.get 'render_progress'
-        if progress >= 100
-          Meteor.clearInterval bar
-          Session.set 'render_progress', 0
-          window.location = "#{fileUrl file}.#{formatExtension format}"
-        else
-          Session.set "render_progress", progress + 1
-      , 30
+      Session.set 'render_progress', 100
+      $.get '/render', {file_id: Session.get('selected_file'), format: format}, (data) ->
+        Session.set 'render_progress', 0
+        window.location = data
 
 Template.render.progress = ->
   Session.get 'render_progress'

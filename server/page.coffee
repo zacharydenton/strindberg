@@ -2,6 +2,7 @@ require = __meteor_bootstrap__.require
 exec = require('child_process').exec
 fs = require('fs')
 path = require('path')
+connect = require('connect')
 app = __meteor_bootstrap__.app
 
 TEXT_FORMATS = ['html', 'latex', 'markdown', 'plain', 'rst', 'org', 'mediawiki']
@@ -25,6 +26,19 @@ pandoc = (filename, to, text, next) ->
 
 filePath = (file) ->
   [WEB_ROOT, 'render', file.owner, file.project, file.filename].join '/'
+
+router = connect.middleware.router (route) ->
+  route.get '/render', (req, res) ->
+    file = Files.findOne {_id: req.query.file_id}
+    format = req.query.format
+    pandoc file.filename, format, file.contents, (err, filename) ->
+      exec "mkdir -p `dirname #{filePath(file)}`", (err, stdout, stderr) ->
+        exec "mv #{filename} #{filePath(file)}.#{formatExtension format}", ->
+          res.writeHead(200)
+          res.end("#{fileUrl(file)}.#{format}")
+    null
+
+app.use(router)
 
 Meteor.publish "projects", () ->
   Projects.find
